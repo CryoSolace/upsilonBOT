@@ -1,0 +1,58 @@
+//import { MessageEmbed } from "discord.js";
+//import { ICommand } from "wokcommands";
+// traits, ideals, bonds, flaws, maleFirstnames, femaleFirstnames,lastnames, characteristics, spells
+const allLists = require("../upsilcharcreate/dnddata.ts");
+const traits = allLists.vars().traits
+const ideals = allLists.vars().ideals
+const bonds = allLists.vars().bonds
+const flaws = allLists.vars().flaws
+const maleFirstnames = allLists.vars().maleFirstnames
+const femaleFirstnames = allLists.vars().femaleFirstnames
+const lastnames = allLists.vars().lastnames
+const characteristics = allLists.vars().characteristics
+const spells = allLists.vars().spells
+
+console.log(allLists.vars());
+
+var lastName = lastnames[Math.floor(Math.random() * lastnames.length)];
+var charName = Math.random() > 0.5 ? maleFirstnames[Math.floor(Math.random() * maleFirstnames.length)] + lastName : femaleFirstnames[Math.floor(Math.random() * femaleFirstnames.length)] + lastName
+console.log(charName);
+
+const randomText = ["Cheemsburger","Peperoni pizza","chadwich","Despacheetos","SausageTroll"];
+
+
+export default {
+    category: "MainComms",
+    description: "Creates a randomly generated character.",
+    permissions:["ADMINISTRATOR"],
+    slash: true,
+    testOnly: true,
+
+    callback: async ({message, text}) =>  {
+        var lastName = lastnames[Math.floor(Math.random() * lastnames.length)];
+        var charName = Math.random() > 0.5 ? maleFirstnames[Math.floor(Math.random() * maleFirstnames.length)] + lastName : femaleFirstnames[Math.floor(Math.random() * femaleFirstnames.length)] + lastName
+        console.log(charName);
+        var randString:string = randomText[Math.floor(Math.random() * randomText.length)] // calls a random value from the array randomText
+        var randPercent = Math.floor(Math.random() * 100) + Math.floor(Math.random() * 100)/100 // generates a number format XX.XX
+
+        const embed = new MessageEmbed() // embed construct 
+            .setAuthor({name: "Upsilon's Character Creator"}) // author and footer deprecated, must now use objects
+            .setTitle(String(randString)) 
+            .setColor("RED")
+            .setDescription("Hello world")
+            .setFooter({text: 'Alex'})
+            .addFields([
+                {
+                    name:`${String(randPercent)}% dumb`,
+                    value:"value",
+                    inline:true,
+                },
+                {
+                    name:"name2",
+                    value:"valu2e",
+                    inline:true,
+                }
+            ])
+        return embed;
+    },
+} as ICommand
