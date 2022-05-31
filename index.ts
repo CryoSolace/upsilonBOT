@@ -20,9 +20,10 @@ client.on("ready", c =>{
         commandsDir: path.join(__dirname, "commands"),
         typeScript: true,
         testServers: ["364047009839054858"],
+        botOwners: (["360801317196660740"])
     })
     .setDefaultPrefix("+")
-    .setBotOwner(["360801317196660740"])
+    
 })
 
 client.login(process.env.TOKEN);

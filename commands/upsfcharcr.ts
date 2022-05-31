@@ -34,30 +34,53 @@ const spells_ = allLists.vars().spells
 export default {
     category: "MainComms",
     description: "Creates a randomly generated character.",
-    permissions:["ADMINISTRATOR"],
     slash: true,
     testOnly: true,
 
     callback: async ({message, text}) => {
-        
-        var lastName = " " + lastnames_[Math.floor(Math.random() * lastnames_.length)];
-        var charName = Math.random() > 0.5 ? maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)] + lastName : femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)] + lastName
-        // generates random char name by concatting first with last, first name gender is random
-        
-        var aliasString = "";
         var gender = "";
+         // ------------------------------------ names
+        var lastName = " " + lastnames_[Math.floor(Math.random() * lastnames_.length)];
+        var charName = Math.random() > 0.5 ? maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)] : femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)]
         
-        if (charName in maleFirstnames_) { // 10% chance to be other gender
+         // ------------------------------------ gender
+        if (maleFirstnames_.includes(charName)) { // 10% chance to be other gender
             gender = Math.random() > 0.9 ? "Female":"Male";
         } else {
             gender = Math.random() > 0.9 ? "Male":"Female" ;
         }
 
+
+        // charName = Math.random() > 0 && maleFirstnames_.includes(charName) ? 
+        //     charName + " " + maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)] :
+        //     charName 
+
+        // charName = Math.random() > 0 && femaleFirstnames_.includes(charName) ? 
+        //     charName + " " + femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)] :
+        //     charName 
+        
+        //console.log(charName, (maleFirstnames_.includes(charName) ), (femaleFirstnames_.includes(charName) ))
+
+        charName = Math.random() > 0.75 && maleFirstnames_.includes(charName) ? // 25% chance to generate 2nd name, 5% to generate 3rd
+            (Math.random() > 0.80 ? charName + " " + maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)] + " " + maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)]: 
+            charName + " " + maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)]) :
+            charName 
+
+        charName = Math.random() > 0.75 && femaleFirstnames_.includes(charName) ? // 25% chance to generate 2nd name, 25% x 20% to generate 3rd
+            (Math.random() > 0.80 ? charName + " " + femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)] + " " + femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)] : 
+            charName + " " + femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)]) :
+            charName 
+
+        charName += lastName;
+
+        // ------------------------------------ aliasing
+        var aliasString = "";
+
         if (gender == "Male") { 
             maleFirstnames_.splice(maleFirstnames_.indexOf(charName),1); // removes the name from the list so its not repeated in the aliases
             for (let i = 0; i < Math.floor(Math.random()*3)+0; i++){  // 0-3 aliases
                 let x = maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)]; 
-                aliasString = Math.random() > 0.4 ? x + "\n" : aliasString; // 60% chance for the alias to get added
+                aliasString = Math.random() > 0.7 ? x + "\n" : aliasString; // 30% chance for the alias to get added
                 maleFirstnames_.splice(maleFirstnames_.indexOf(x),1); 
             }
         } else {
@@ -65,7 +88,7 @@ export default {
             femaleFirstnames_.splice(femaleFirstnames_.indexOf(charName),1);
             for (let i = 0; i < Math.floor(Math.random()*3)+0; i++){ 
                 let x = femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)];
-                aliasString += x + "\n"; 
+                aliasString = Math.random() > 0.7 ? x + "\n" : aliasString; // 30% chance for the alias to get added
                 femaleFirstnames_.splice(femaleFirstnames_.indexOf(x),1); 
             }
         }
@@ -73,7 +96,7 @@ export default {
             aliasString = "No known aliases."
         }
 
-
+         // ------------------------------------ features
         var traitsString = "";
         for (let i = 0; i < Math.floor(Math.random()*3)+1; i++){ // for loop returns 1 to 3 traits at random to traitsList
             let x = traits_[Math.floor(Math.random() * traits_.length)];
@@ -102,9 +125,34 @@ export default {
             flaws_.splice(flaws_.indexOf(x),1); // ensures no repeats
         }
 
+         // ------------------------------------ abilities and grading
+        const strPercent = parseFloat((Math.random() * 100).toFixed(2));
+        const dexPercent = parseFloat((Math.random() * 100).toFixed(2));
+        const conPercent = parseFloat((Math.random() * 100).toFixed(2));
+        const chrPercent = parseFloat((Math.random() * 100).toFixed(2));
 
-        const intPercent = parseFloat((Math.random() * 100).toFixed(2))// generates int and wis percentage before hand
-        const wisPercent = parseFloat((Math.random() * 100).toFixed(2))
+        const intPercent = Math.random() > 0.45 ? parseFloat((Math.random() * 60).toFixed(2)) : parseFloat((Math.random() * 40 + 60).toFixed(2)); //60% chance to have lower than 60% wis 
+        const wisPercent = Math.random() > 0.4 ? parseFloat((Math.random() * 60).toFixed(2)) : parseFloat((Math.random() * 40 + 60).toFixed(2)); //60% chance to have lower than 60% wis 
+        const totPercent = parseFloat(((strPercent+dexPercent+conPercent+chrPercent+intPercent*1.3+wisPercent*1.3)/6).toFixed(2)); // less weighting on wis and int percent, so *1.3 to compensate
+        var totGrade = "";
+
+        if (totPercent > 90) {
+            totGrade = "S+"
+        } else if (totPercent > 80) {
+            totGrade = "S"
+        } else if (totPercent > 70) {
+            totGrade = "A"
+        } else if (totPercent > 50) {
+            totGrade = "B"
+        } else if (totPercent > 40) {
+            totGrade = "C"
+        } else if (totPercent > 20) {
+            totGrade = "D"
+        } else {
+            totGrade = "F"
+        }
+
+         // ------------------------------------ age 
         var lowerAge = 10; // base case 10 and 80 range of age
         var upperAge = 80;
 
@@ -118,8 +166,15 @@ export default {
             } else if (wisPercent < 30) {
                 upperAge = 30; // if wis percent is more than 55, 80, increase lower age
             }
+        } 
+
+        if (strPercent > 70) {
+            lowerAge = 18;
+            upperAge = 50;
         }
-        const age = Math.floor(Math.random()*upperAge)+lowerAge; // const age is set as a random number between lower and upper
+        
+        const age = (Math.floor(Math.random()*(upperAge-lowerAge))+lowerAge); // const age is set as a random number between lower and upper
+        //console.log(age, upperAge, lowerAge);
 
         //var randPercent = (Math.floor(Math.random() * 100) + Math.floor(Math.random() * 100)/100); // generates a number format XX.XX
 
@@ -187,17 +242,17 @@ export default {
                 },
                 {
                     name:"Strength",
-                    value:`${(Math.random() * 100).toFixed(2)}%`,
+                    value:`${strPercent}%`,
                     inline:true,
                 },
                 {
                     name:"Dexterity",
-                    value:`${(Math.random() * 100).toFixed(2)}%`,
+                    value:`${dexPercent}%`,
                     inline:true,
                 },
                 {
                     name:"Constitution",
-                    value:`${(Math.random() * 100).toFixed(2)}%`,
+                    value:`${conPercent}%`,
                     inline:true,
                 },
                 {
@@ -207,12 +262,17 @@ export default {
                 },
                 {
                     name:"Wisdom",
-                    value:`${(wisPercent)}%`,
+                    value:`${wisPercent}%`,
                     inline:true,
                 },
                 {
                     name:"Charisma",
-                    value:`${(Math.random() * 100).toFixed(2)}%`,
+                    value:`${chrPercent}%`,
+                    inline:true,
+                },
+                {
+                    name:"Grade",
+                    value:`Average: ${parseFloat(((strPercent+dexPercent+conPercent+chrPercent+intPercent+wisPercent)/6).toFixed(2))}%, Class: ${totGrade}`,
                     inline:true,
                 },
             

@@ -2156,14 +2156,7 @@ var lastnames = [
     "Dean",
 ]
 
-var characteristics = [
-    "Strength",
-    "Dexterity",
-    "Consitution",
-    "Intelligence",
-    "Wisdom",
-    "Charisma"
-]
+
 
 var spells = [
     "Acid Arrow",
@@ -2488,7 +2481,7 @@ var spells = [
 ]
 
 const vars = () => {
-    return {traits, ideals, bonds, flaws, maleFirstnames, femaleFirstnames, lastnames, characteristics, spells};
+    return {traits, ideals, bonds, flaws, maleFirstnames, femaleFirstnames, lastnames, spells};
 }
 
 // traits, ideals, bonds, flaws, maleFirstnames, femaleFirstnames,lastnames, characteristics, spells
