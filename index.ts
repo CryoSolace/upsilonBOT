@@ -15,13 +15,14 @@ const client = new DiscordJS.Client({
 
 client.on("ready", c =>{
     console.log(`Ready as ${c.user.tag}.`);
-
+    c.user.setPresence({ activities: [{ name: 'with my feelings' }], status: 'idle' });
     new WOKCommands(client, {
         commandsDir: path.join(__dirname, "commands"),
         typeScript: true,
         testServers: ["364047009839054858"],
     })
     .setDefaultPrefix("+")
+    .setBotOwner(["360801317196660740"])
 })
 
 client.login(process.env.TOKEN);
