@@ -1,2 +1,2 @@
-# upsilonBOT
-Versatile upsilonBOT for discord.
+# up
+upsilonBOT for discord tomfoolery
