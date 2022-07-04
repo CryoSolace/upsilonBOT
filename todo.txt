@@ -1,0 +1,28 @@
+to do: (charcr)
+implement dob done
+some sort of picture? done
+
+global to do:
+quotes command done
+dice roll (xdy) done
+lovecalc 2inps (youtube algorithm) done
+rgb 3inps https://www.thecolorapi.com/id?format=svg&named=false&hex=24B1E1 done
+
+hex 1inp regex practice
+tictactoe?
+reddit api
+
+two number calculator:
++ add
+- sub
+* times
+/ div => by 0
+** power
+% mod
+// integer div
+rt root
+                  bw ops
+~ not 
+& and 
+| or
+^ xor

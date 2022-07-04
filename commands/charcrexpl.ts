@@ -15,9 +15,9 @@ import { ICommand } from "wokcommands";
 
 
 export default {
-    category: "MainComms",
+    category: "Fun",
     description: "Explains UCC.",
-    permissions:["ADMINISTRATOR"],
+    //permissions:["ADMINISTRATOR"],
     slash: true,
     testOnly: true,
 

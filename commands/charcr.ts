@@ -11,7 +11,7 @@ const maleFirstnames_ = allLists.vars().maleFirstnames
 const femaleFirstnames_ = allLists.vars().femaleFirstnames
 const lastnames_ = allLists.vars().lastnames
 //const characteristics_ = allLists.vars().characteristics
-const spells_ = allLists.vars().spells
+//const spells_ = allLists.vars().spells
 
 // console.log(allLists.vars());
 // console.log(allLists.vars().characteristics)
@@ -24,15 +24,26 @@ const spells_ = allLists.vars().spells
 //     "Wisdom",
 //     "Charisma"
 // ]
-// to do:
-// implement dob
-// some sort of picture?
-// something else
 
 
+//https://fakeface.rest/face/json?gender=female&minimum_age=16&maximum_age=20
+function getPic(gen:String,age:number) {
+    return fetch(`https://fakeface.rest/face/json?gender=${gen}&minimum_age=${age-5}&maximum_age=${age+5}`)//https://zenquotes.io/api/random")
+    .then(pic => {
+        return pic.json();
+    })
+    .then(split => {
+        //
+        //const obj = JSON.parse(split)
+        const url = split.image_url
+        return (url).toString();// + "@@" + split[0]["a"];
+        //return {quote,author};
+    })
+ 
+}
 
 export default {
-    category: "MainComms",
+    category: "Fun",
     description: "Creates a randomly generated character.",
     slash: true,
     testOnly: true,
@@ -42,11 +53,13 @@ export default {
          // ------------------------------------ names
         var lastName = " " + lastnames_[Math.floor(Math.random() * lastnames_.length)];
         var charName = Math.random() > 0.5 ? maleFirstnames_[Math.floor(Math.random() * maleFirstnames_.length)] : femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)]
-        
+        let orgGender= "male";
          // ------------------------------------ gender
         if (maleFirstnames_.includes(charName)) { // 10% chance to be other gender
+            orgGender = "male";
             gender = Math.random() > 0.9 ? "Female":"Male";
         } else {
+            orgGender = "female";
             gender = Math.random() > 0.9 ? "Male":"Female" ;
         }
 
@@ -84,7 +97,7 @@ export default {
                 maleFirstnames_.splice(maleFirstnames_.indexOf(x),1); 
             }
         } else {
-            gender = Math.random() > 0.9 ? "Male":"Female" 
+            //gender = Math.random() > 0.9 ? "Male":"Female" 
             femaleFirstnames_.splice(femaleFirstnames_.indexOf(charName),1);
             for (let i = 0; i < Math.floor(Math.random()*3)+0; i++){ 
                 let x = femaleFirstnames_[Math.floor(Math.random() * femaleFirstnames_.length)];
@@ -133,7 +146,7 @@ export default {
 
         const intPercent = Math.random() > 0.45 ? parseFloat((Math.random() * 60).toFixed(2)) : parseFloat((Math.random() * 40 + 60).toFixed(2)); //60% chance to have lower than 60% wis 
         const wisPercent = Math.random() > 0.4 ? parseFloat((Math.random() * 60).toFixed(2)) : parseFloat((Math.random() * 40 + 60).toFixed(2)); //60% chance to have lower than 60% wis 
-        const totPercent = parseFloat(((strPercent+dexPercent+conPercent+chrPercent+intPercent*1.3+wisPercent*1.3)/6).toFixed(2)); // less weighting on wis and int percent, so *1.3 to compensate
+        const totPercent = parseFloat(((strPercent+dexPercent+conPercent+chrPercent+intPercent*1.2+wisPercent*1.2)/6).toFixed(2)); // weighting on wis and int percent, so *1.2 to compensate
         var totGrade = "";
 
         if (totPercent > 90) {
@@ -178,27 +191,53 @@ export default {
 
         //var randPercent = (Math.floor(Math.random() * 100) + Math.floor(Math.random() * 100)/100); // generates a number format XX.XX
 
+        //  ------------------------------------ birthday
+
+        const date = [new Date().getDate(),new Date().getMonth(),new Date().getFullYear()];
+        const bday = [0,0,0]
+
+        bday[1] = Math.ceil(Math.random() * 12)// generate a month first
+        let month = bday[1]
+
+        // spaghetti code
+        if (bday[1] < date[1]) { // if month is before the current month
+            bday[2] = date[2] - age // set the year to subtract age
+            let monthCap = (month in [4,6,9,11]) ? (30) :((month == 2) ? (bday[2] % 4 == 0 ? 29 : 28) : 31)
+            bday[0] = Math.ceil(Math.random() * (monthCap))
+        } else if (bday[1] > date[1]) { // if after
+            bday[2] = date[2] - age - 1 // set the year to subtract age and also a 1
+            let monthCap = (month in [4,6,9,11]) ? (30) :((month == 2) ? (bday[2] % 4 == 0 ? 29 : 28) : 31)
+            bday[0] = Math.ceil(Math.random() * (monthCap)) 
+        } else { // if equal to the age
+            let sameYear = Math.random() > 0.5 ? true : false
+            bday[2] = sameYear ? date[2] - age : date[2] - age - 1 // choose the year by chance
+            let monthCap = (month in [4,6,9,11]) ? (30) :((month == 2) ? (bday[2] % 4 == 0 ? 29 : 28) : 31) // choose the day by funky method
+            bday[0] = sameYear ? Math.ceil(Math.random() * date[0]) : Math.ceil(Math.random() * (monthCap - date[0])) +  date[0] 
+        }
+
+
+
         const embed = new MessageEmbed() // embed construct 
             .setAuthor({name: " "}) // author and footer deprecated, must now use objects
             .setTitle(String(`Profile: ${charName}`)) 
             .setColor([Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)])
 
             .setDescription(`**Personality:**\n${traitsString}`)
-            
+            .setThumbnail(`${(await getPic(orgGender,age).then()).toString()}`)
             .addFields([
                 {
                     name:".",
-                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
                     inline:false,
                 },
                 {
                     name:"\n\n**Features**",
-                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
                     inline:false,
                 },
                 {
-                    name:"Age",
-                    value:`${(age)}`,
+                    name:"Age, Birthday",
+                    value:`${(age)} - ${bday[0]}/${bday[1]}/${bday[2]}`,
                     inline:true,
                 },   
                 {
@@ -232,12 +271,12 @@ export default {
             .addFields([
                 {
                     name:".",
-                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
                     inline:false,
                 },
                 {
                     name:"\n\n**Characteristics Aptitudes**",
-                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+                    value:" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
                     inline:false,
                 },
                 {
